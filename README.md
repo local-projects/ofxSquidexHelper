@@ -1,3 +1,3 @@
-# ofxSimpleHTTPSPost
-For making a POST request using HTTPS. You even get a response back. 
-Mostly useful for getting oauth tokens and stuff.
+# ofxSquidexHelper
+
+For getting content from squidex. So far only supports getting an oauth token and using that token to make a basic content GET.
