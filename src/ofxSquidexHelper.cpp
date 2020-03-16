@@ -149,7 +149,7 @@ ofJson ofxSquidexHelper::getSquidexContent(string url, string token){
             // https://github.com/nlohmann/json#json-as-first-class-data-type
             ofJson responseJson = response->json();
 
-            return responseJson.dump();
+            return responseJson;
         }
         else
         {
