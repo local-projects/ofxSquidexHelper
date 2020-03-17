@@ -15,4 +15,5 @@ class ofxSquidexHelper {
 public:
     string getSquidexToken(string url, string clientID, string clientSecret);
     ofJson getSquidexContent(string url, string token);
+    ofPixels getSquidexAssetContent(string url, string token);
 };

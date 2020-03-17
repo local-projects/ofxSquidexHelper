@@ -167,3 +167,71 @@ ofJson ofxSquidexHelper::getSquidexContent(string url, string token){
 
     return "";
 }
+
+/*
+ 
+ Function : download image asset content from squidex - returns ofPixels to load images
+ 
+ May want to add ability to get extented asset info to define image format size, etc..
+ However default detection seems to be working fine atm
+ - if and when this is wanted getAsset extended info via "items/_links/self" uri
+ 
+ */
+ofPixels ofxSquidexHelper::getSquidexAssetContent( string url, string token ){
+
+    std::ostringstream authStream;
+    authStream << "Bearer " << token;
+    
+    ofxHTTP::Client client;
+    ofxHTTP::GetRequest request( url );
+    ofxHTTP::ClientSessionSettings settings;
+    Poco::Net::NameValueCollection defaultHeaders;
+    defaultHeaders.add( "Authorization", authStream.str() );
+    settings.setDefaultHeaders( defaultHeaders );
+    client.context().setClientSessionSettings( settings );
+    
+    try
+    {
+        //exe request
+        auto response = client.execute( request );
+        
+        //check for success
+        if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK )
+        {
+            // response->pixels() Method Causing Errors
+            //
+            // std::cout << "Is  Pixels : " << response->isPixels() << std::endl;
+            // p = response->pixels();
+            //
+            // So we check there is a stream
+            // and buffer the response & load into pixels
+            if( response->hasResponseStream() )
+            {
+                ofPixels p;
+                ofBuffer buffer( response->stream() );
+                ofLoadImage( p, buffer );
+                return p;
+            }
+            else
+            {
+                ofLogError("ofxSquidexHelper::getSquidexAsset") << "Response has no stream";
+            }
+        }
+        else
+        {
+            ofLogError("ofxSquidexHelper::getSquidexAsset") << response->getStatus() << " " << response->getReason();
+        }
+    }
+    catch ( const Poco::Exception& exc )
+    {
+        ofLogError("ofxSquidexHelper::getSquidexAsset") << exc.displayText();
+    }
+    catch ( const std::exception& exc )
+    {
+        ofLogError("ofxSquidexHelper::getSquidexAsset") << exc.what();
+    }
+    
+    ofPixels p;
+    return p;
+}
+ 
