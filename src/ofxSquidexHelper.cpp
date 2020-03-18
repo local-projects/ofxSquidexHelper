@@ -37,6 +37,15 @@
  
  */
 
+/*
+ 
+ GET TOKEN
+ https://cloud.squidex.io/api/docs#section/Authentication
+ 
+ Function : Makes post request to squidex to retrieve auth token
+ 
+ */
+
 string ofxSquidexHelper::getSquidexToken(string url, string clientID, string clientSecret){
     ofxHTTP::Client client;
 
@@ -115,6 +124,15 @@ string ofxSquidexHelper::getSquidexToken(string url, string clientID, string cli
    return response.data.getText();
  */
 
+/*
+ 
+ BASIC GET
+ 
+ Function : makes a get request with provided url & token - returns JSON object
+            This function can be used for any basic get requests to squidex that return JSON
+ 
+ */
+
 ofJson ofxSquidexHelper::getSquidexContent(string url, string token){
     
     std::ostringstream authStream;
@@ -170,7 +188,11 @@ ofJson ofxSquidexHelper::getSquidexContent(string url, string token){
 
 /*
  
+ GET ASSET CONTENT
+ https://cloud.squidex.io/api/docs#operation/AssetContent_GetAssetContent
+ 
  Function : download image asset content from squidex - returns ofPixels to load images
+ uri structure : https://cloud.squidex.io/api/assets/{id}
  
  May want to add ability to get extented asset info to define image format size, etc..
  However default detection seems to be working fine atm
@@ -235,3 +257,161 @@ ofPixels ofxSquidexHelper::getSquidexAssetContent( string url, string token ){
     return p;
 }
  
+
+/*
+ 
+@TODO: INCOMPLETE
+
+POST NEW ASSET
+https://cloud.squidex.io/api/docs#operation/Assets_PostAsset
+
+Function : Uploads Image from the path provided to squidex - returns JSON response
+uri structure : https://cloud.squidex.io/api/apps/{app}/assets
+params : $parentId=XXXX-XXXX-XXXX
+
+ParentId param denotes which directory the asset should go
+to retrieve all parent folders : https://cloud.squidex.io/api/docs#operation/AssetFolders_GetAssetFolders
+ 
+*/
+ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string localPath, string filename){
+    
+    string file = localPath + filename;
+    
+    std::ostringstream authStream;
+    authStream << "Bearer " << token;
+    
+    ofxHTTP::Client client;
+    ofxHTTP::PostRequest request( url );
+    ofxHTTP::ClientSessionSettings settings;
+    Poco::Net::NameValueCollection defaultHeaders;
+    
+    defaultHeaders.add("Authorization", authStream.str());
+    settings.setDefaultHeaders(defaultHeaders);
+    client.context().setClientSessionSettings(settings);
+    
+    
+    
+    //-----------------------------------------
+    //@TODO: ERROR - THIS DOESNT WORK
+    //Squidex takes 1 file at a time / Multipart encoded content
+    // ERROR : 400 - "Cannot create asset"
+    
+    //lets test sending MIME with it
+    std::multimap<std::string, std::string> formFields =
+    {
+        {"base_64_encoded_image", ofxIO::Base64Encoding::encode( ofBufferFromFile( file ) )},
+        {"mimeType", "image/png"}
+    };
+    
+    //    std::vector<ofxHTTP::FormPart> formFiles = {
+    //        ofxHTTP::FormPart(ofxHTTP::FormPart::Type::FILE, "TEST", file)
+    //    };
+    
+    
+    request.addFormFields( formFields );
+    
+    //request.addFormParts( formFiles );
+    
+    request.addFormFile( filename, file, "image/png" );
+    
+    //request.setFormEncoding(ofx::HTTP::PostRequest::FORM_ENCODING_MULTIPART);
+
+    //std::cout << request.getContentType() << std::endl;
+    
+    //-----------------------------------------
+    
+    try
+    {
+        auto response = client.execute( request );
+        
+        if(response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
+        {
+            ofJson responseJson = response->json();
+            return responseJson;
+        }
+        else if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_CREATED)
+        {
+            ofJson responseJson = response->json();
+            return responseJson;
+        }
+        else
+        {
+            ofLogError("ofxSquidexHelper::postSquidexNewAsset") << response->getStatus() << " " << response->getReason();
+            //debugging
+            ofJson responseJson = response->json();
+            return responseJson;
+        }
+    }
+    catch (const Poco::Exception& exc)
+    {
+        ofLogError("ofxSquidexHelper::postSquidexNewAsset") << exc.displayText();
+    }
+    catch (const std::exception& exc)
+    {
+        ofLogError("ofxSquidexHelper::postSquidexNewAsset") << exc.what();
+    }
+    
+    return "";
+    
+}
+
+/*
+ 
+@TODO: UNTEST
+
+POST NEW CONTENT
+
+Function : Posts json object to squidex
+This can really be used for any basic POST with JSON body
+ 
+*/
+ofJson ofxSquidexHelper::postSquidexContent(string url, string token, ofJson data){
+    
+    std::ostringstream authStream;
+    authStream << "Bearer " << token;
+    
+    ofxHTTP::Client client;
+    ofxHTTP::JSONRequest request( url, "HTTP/1.1" );
+    
+    ofxHTTP::ClientSessionSettings settings;
+    Poco::Net::NameValueCollection defaultHeaders;
+    
+    defaultHeaders.add("Authorization", authStream.str());
+    settings.setDefaultHeaders(defaultHeaders);
+    client.context().setClientSessionSettings(settings);
+    
+    request.setJSON( data );
+    
+    try
+    {
+        auto response = client.execute( request );
+        
+        if(response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
+        {
+            ofJson responseJson = response->json();
+            return responseJson;
+        }
+        else if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_CREATED)
+        {
+            ofJson responseJson = response->json();
+            return responseJson;
+        }
+        else
+        {
+            ofLogError("ofxSquidexHelper::postSquidexContent") << response->getStatus() << " " << response->getReason();
+            ofJson responseJson = response->json();
+            return responseJson;
+        }
+    }
+    catch (const Poco::Exception& exc)
+    {
+        ofLogError("ofxSquidexHelper::postSquidexContent") << exc.displayText();
+    }
+    catch (const std::exception& exc)
+    {
+        ofLogError("ofxSquidexHelper::postSquidexContent") << exc.what();
+    }
+    
+    return "";
+    
+}

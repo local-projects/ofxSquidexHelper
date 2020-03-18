@@ -16,4 +16,6 @@ public:
     string getSquidexToken(string url, string clientID, string clientSecret);
     ofJson getSquidexContent(string url, string token);
     ofPixels getSquidexAssetContent(string url, string token);
+    ofJson postSquidexAsset(string url, string token, string localPath, string filename);
+    ofJson postSquidexContent(string url, string token, ofJson data);
 };
