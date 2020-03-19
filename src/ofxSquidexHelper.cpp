@@ -281,44 +281,69 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
     authStream << "Bearer " << token;
     
     ofxHTTP::Client client;
+    
     ofxHTTP::PostRequest request( url );
+
     ofxHTTP::ClientSessionSettings settings;
     Poco::Net::NameValueCollection defaultHeaders;
     
-    defaultHeaders.add("Authorization", authStream.str());
+    defaultHeaders.add( "Authorization", authStream.str() );
+    
+    //This didn't seem to help at all
+    defaultHeaders.add( "Accept", "*/*" );
+    defaultHeaders.add( "Cache-Control", "no-cache" );
+    defaultHeaders.add( "Accept-Encoding", "gzip, deflate, br" );
+    
     settings.setDefaultHeaders(defaultHeaders);
+    
     client.context().setClientSessionSettings(settings);
     
+    /*
+     @TODO: GET THIS WORKING
+     -----------------------------------------
+     
+     INFO :
+             {
+               "details": [
+                 "Can only upload one file, found 1 files."
+               ],
+               "message": "Cannot create asset.",
+               "statusCode": 400,
+               "traceId": "|dedd5456-4184c3319b43dc91.",
+               "type": "https://tools.ietf.org/html/rfc7231#section-6.5.1"
+             }
+            (INTERNET SHOWS THIS ERROR MESSAGE + DETAIL occurs for many errors - not just too many files.. )
+            
+     POST :
+            URI, FILE, ENCODING Have been confirmed with postman successful post ( using same file )
+            Based off echoing the posts from here & postman -  there dont appear to be any differences
     
+     CONFIRMED
+     POSTMAN
+     SETTINGS :
+            FORM_ENCODING_MULTIPART
+            Base64 Encoding
+            Added to "file" part of form
+            Only content in "file" section
+            FileStream started with "data:application/octet-stream;base64,"
+            content-type multipart/form-data
+     
+     DIFFERENT
+     ELEMENTS :
+            Accept Header ( i manually added to match )
+            Cache-Control ( i manually added to match )
+            Accept-Encoding ( postman = "gzip, deflate, br" )
+            content-type Boundry...
+    */
     
-    //-----------------------------------------
-    //@TODO: ERROR - THIS DOESNT WORK
-    //Squidex takes 1 file at a time / Multipart encoded content
-    // ERROR : 400 - "Cannot create asset"
-    
-    //lets test sending MIME with it
-    std::multimap<std::string, std::string> formFields =
-    {
-        {"base_64_encoded_image", ofxIO::Base64Encoding::encode( ofBufferFromFile( file ) )},
-        {"mimeType", "image/png"}
-    };
-    
-    //    std::vector<ofxHTTP::FormPart> formFiles = {
-    //        ofxHTTP::FormPart(ofxHTTP::FormPart::Type::FILE, "TEST", file)
-    //    };
-    
-    
-    request.addFormFields( formFields );
-    
-    //request.addFormParts( formFiles );
-    
-    request.addFormFile( filename, file, "image/png" );
-    
-    //request.setFormEncoding(ofx::HTTP::PostRequest::FORM_ENCODING_MULTIPART);
 
-    //std::cout << request.getContentType() << std::endl;
+    ofxHTTP::FormPart formFile = ofxHTTP::FormPart(ofxHTTP::FormPart::Type::FILE, filename , file, "image/png" );
+    request.addFormPart(formFile);
     
-    //-----------------------------------------
+    //or
+    //request.addFormFile( filename, file, "image/png" );
+    
+    request.setFormEncoding(ofx::HTTP::PostRequest::FORM_ENCODING_MULTIPART);
     
     try
     {
@@ -356,10 +381,8 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
 }
 
 /*
- 
-@TODO: UNTEST
 
-POST NEW CONTENT
+POST CONTENT
 
 Function : Posts json object to squidex
 This can really be used for any basic POST with JSON body
