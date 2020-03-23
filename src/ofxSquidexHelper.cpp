@@ -290,16 +290,16 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
     defaultHeaders.add( "Authorization", authStream.str() );
     
     //This didn't seem to help at all
-    defaultHeaders.add( "Accept", "*/*" );
-    defaultHeaders.add( "Cache-Control", "no-cache" );
-    defaultHeaders.add( "Accept-Encoding", "gzip, deflate, br" );
+    //defaultHeaders.add( "Accept", "*/*" );
+    //defaultHeaders.add( "Cache-Control", "no-cache" );
+    //defaultHeaders.add( "Accept-Encoding", "gzip, deflate, br" );
     
     settings.setDefaultHeaders(defaultHeaders);
     
     client.context().setClientSessionSettings(settings);
     
     /*
-     @TODO: GET THIS WORKING
+     @TODO: ERROR : GET THIS WORKING
      -----------------------------------------
      
      INFO :
@@ -316,7 +316,7 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
             
      POST :
             URI, FILE, ENCODING Have been confirmed with postman successful post ( using same file )
-            Based off echoing the posts from here & postman -  there dont appear to be any differences
+            Based off echoing the request posts from here & postman -  there dont appear to be any differences in structure
     
      CONFIRMED
      POSTMAN
@@ -362,7 +362,7 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
         else
         {
             ofLogError("ofxSquidexHelper::postSquidexNewAsset") << response->getStatus() << " " << response->getReason();
-            //debugging
+            //returning for debugging
             ofJson responseJson = response->json();
             return responseJson;
         }
