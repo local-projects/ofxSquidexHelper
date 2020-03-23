@@ -5,3 +5,5 @@ ofxPoco
 ../../../ExternalAddons/ofxNetworkUtils
 ../../../ExternalAddons/ofxHTTP
 ../../../ExternalAddons/ofxSquidexHelper
+../../../ExternalAddons/ofxJSON
+../../../ExternalAddons/ofxJsonSettings
