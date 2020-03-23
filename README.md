@@ -19,9 +19,9 @@ A note about Naming re : Content vs. Asset
 * CONTENT on Squidex is an object with many attributes, one being an ASSET_ID - which links the ASSET to the CONTENT object
 * An ASSET is the actual asset object, including the file and other info
 * Therefore 
-	* getContent - is getting the content object
-	* getAssets - is getting the Asset object 
-	* getAssetContent - is getting the asset file
+	* getContent - is getting the content object ( info about the content w/ ref to an asset )
+	* getAssets - is getting the Asset object ( info about the asset )
+	* getAssetContent - is getting the Asset file ( literal asset pixels )
 
 
 ## Dependancies :
@@ -73,7 +73,7 @@ A note about Naming re : Content vs. Asset
 To run example code;
 
 * make sure you have SSL cert in `bin/data/ssl`
-* This example uses `ofxJsonSettings` to set credentials for connecting to squidex. Make sure to include a json file with squidex info here `bin/data/tmp/settings.json` or assign your own values in setup(). Format of json file is as follows;
+* This example uses `ofxJsonSettings ( ofxJSON dep )` to set credentials for connecting to squidex. Make sure to include a json file with squidex info here `bin/data/tmp/settings.json` or assign your own values in setup(). Format of json file is as follows;
 
 	
 		{
