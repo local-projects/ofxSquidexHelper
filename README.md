@@ -4,7 +4,7 @@
 
 * **Fix : postSquidexAsset()** - unable to post asset to squidex, notes regarding the error can be found in code. 
 
-##Intro
+## Intro
 
 Helper for Interfacing with Squidex CMS. Current Functionality includes; 
 
@@ -68,7 +68,7 @@ A note about Naming re : Content vs. Asset
 * Optional Param for Parent Folder id
 * Returns JSON object with asset information ( including ID ) 
 
-##Example
+## Example
 
 To run example code;
 
