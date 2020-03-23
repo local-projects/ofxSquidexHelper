@@ -8,7 +8,7 @@ void ofApp::setup(){
     
     //Update these to your CMS info
     //Or create a settings.json file in bin/data/tmp - refer to readme for more info
-    Settings::get().load("settings.json");
+    Settings::get().load("tmp/settings.json");
     
     appName = Settings::getString("appName");
     clientID = Settings::getString("clientID");
