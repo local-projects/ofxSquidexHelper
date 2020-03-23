@@ -73,7 +73,17 @@ A note about Naming re : Content vs. Asset
 To run example code;
 
 * make sure you have SSL cert in `bin/data/ssl`
-* update the fields in setup - regarding the squidex app credentials
+* This example uses `ofxJsonSettings` to set credentials for connecting to squidex. Make sure to include a json file with squidex info here `bin/data/tmp/settings.json` or assign your own values in setup(). Format of json file is as follows;
+
+	
+		{
+	    "baseUrl"   :   "https://cloud.squidex.io",
+	    "appName"   :   "{app-name}",
+	    "contentParent" :   "{content-bucket}",
+	    "clientID"  :   "{client-id}",
+	    "clientSecret"    :   "{client-secret}"
+		}
+		//contentParent = param that used when making a content call to a specific schema..   /api/content/appName/{contentParent}/ 
 
 
 About example code;
