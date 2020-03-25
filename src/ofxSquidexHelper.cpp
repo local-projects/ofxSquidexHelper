@@ -349,12 +349,7 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
     {
         auto response = client.execute( request );
         
-        if(response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
-        {
-            ofJson responseJson = response->json();
-            return responseJson;
-        }
-        else if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_CREATED)
+        if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_CREATED)
         {
             ofJson responseJson = response->json();
             return responseJson;
@@ -362,9 +357,9 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
         else
         {
             ofLogError("ofxSquidexHelper::postSquidexNewAsset") << response->getStatus() << " " << response->getReason();
-            //returning for debugging
+            //printing for debugging
             ofJson responseJson = response->json();
-            return responseJson;
+            std::cout << "POST SQUIDEX NEW ASSET RESPONSE DUMP :\n" << responseJson.dump(4) << std::endl;
         }
     }
     catch (const Poco::Exception& exc)
@@ -375,9 +370,7 @@ ofJson ofxSquidexHelper::postSquidexAsset(string url, string token, string local
     {
         ofLogError("ofxSquidexHelper::postSquidexNewAsset") << exc.what();
     }
-    
     return "";
-    
 }
 
 /*
@@ -409,12 +402,7 @@ ofJson ofxSquidexHelper::postSquidexContent(string url, string token, ofJson dat
     {
         auto response = client.execute( request );
         
-        if(response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
-        {
-            ofJson responseJson = response->json();
-            return responseJson;
-        }
-        else if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_CREATED)
+        if( response->getStatus() == Poco::Net::HTTPResponse::HTTP_CREATED)
         {
             ofJson responseJson = response->json();
             return responseJson;
@@ -422,8 +410,6 @@ ofJson ofxSquidexHelper::postSquidexContent(string url, string token, ofJson dat
         else
         {
             ofLogError("ofxSquidexHelper::postSquidexContent") << response->getStatus() << " " << response->getReason();
-            ofJson responseJson = response->json();
-            return responseJson;
         }
     }
     catch (const Poco::Exception& exc)
